@@ -30,6 +30,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -118,6 +119,7 @@ public class DeviceListActivity extends Activity {
 
         mAdapter = new ArrayAdapter<UsbSerialPort>(this,
                 android.R.layout.simple_expandable_list_item_2, mEntries) {
+
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 final TwoLineListItem row;
@@ -136,8 +138,33 @@ public class DeviceListActivity extends Activity {
                 final String title = String.format("Vendor %4X Product %4X", device.getVendorId(), device.getProductId());
                 row.getText1().setText(title);
 
-                final String subtitle = driver.getClass().getSimpleName();
-                row.getText2().setText(subtitle);
+                //final String subtitle = driver.getClass().getSimpleName();
+
+                String serial = "";
+                String manufacturer = "";
+                String productId = "";
+                String vendorId = "";
+                String productName = "";
+                String version = "";
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    serial = device.getSerialNumber();
+                    manufacturer = device.getManufacturerName();
+                }
+
+                productId = String.format("%4X", device.getProductId());
+                vendorId = String.format("%4X", device.getVendorId());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    productName = device.getProductName();
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    version = device.getVersion();
+                }
+
+
+                row.getText2().setText("Product Id - "+productId+"\nVendor Id - "+vendorId+"\nVersion - "+version+"\nSerial No - "+serial+"\nProduct Name - "+productName+"\nManufacturer - "+manufacturer);
 
                 return row;
             }
